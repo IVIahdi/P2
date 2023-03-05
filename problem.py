@@ -9,7 +9,7 @@ class ConstrainedRouteProblem:
         self.initial_state = (initial_agent_loc, False, False) + tuple(temp)
 
     def actions(self, state):
-        return state.map_edges if self.map_edges != [] else []
+        return [i for i in self.map_edges if state[0] in i]
 
     def result(self, state, action):
         if action in self.must_visit:
@@ -36,8 +36,8 @@ class GridProblemWithMonsters:
         self.N = N
         self.monster_coords = monster_coords
         self.food_coords = food_coords
-        tmp = [False for i in range(food_coords)]
-        self.initial_state = initial_agent_loc + tuple(0) + tuple(tmp)
+        tmp = [0]+[False for i in food_coords]
+        self.initial_state = initial_agent_loc + tuple(tmp)
     def actions(self,state):
         l = []
         if state[2] == 0: #init up
