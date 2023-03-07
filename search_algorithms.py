@@ -1,4 +1,5 @@
 import heapq
+import problem
 
 
 class PriorityQueue:
@@ -8,7 +9,6 @@ class PriorityQueue:
         # add the items to the PQ
         for item in items:
             self.add(item)
-
 
     """
     Add item to PQ with priority-value given by call to priority_function
@@ -54,8 +54,8 @@ def get_path_states(node: Node):
     if node == None:
         return []
     return get_path_states(node.parent_node) + list(node.state)
-def best_first_search(problem, f):
-    node = Node(state=problem.initial)
+def best_first_search(problem, f = (lambda x: x)):
+    node = Node(state=problem.initial_state)
     frontier = PriorityQueue(items=node,priority_function=f)
     reached = {problem.initial:node}
     while frontier != None:
