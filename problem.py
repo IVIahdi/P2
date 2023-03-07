@@ -5,30 +5,38 @@ class ConstrainedRouteProblem:
         self.map_edges = map_edges
         self.map_coords = map_coords
         self.must_visit = must_visit
-        temp = [False for i in range(len(self.must_visit)+1)]
+        temp = [False for i in must_visit]
         self.initial_state = (initial_agent_loc, False, False) + tuple(temp)
-
     def actions(self, state):
-        return [i for i in self.map_edges if state[0] in i]
-
+        temp = [i for i in self.map_edges.keys() if state[0] in i]
+        temp2 = []
+        for i in temp:
+            if state[0] == i[0]:
+                temp2.append(i[1])
+            if state[0] == i[1]:
+                temp2.append(i[0])
+        return temp2
     def result(self, state, action):
+        s = list(state)
+        s[0] = action
+        if action == self.goal_loc and s[1] == True:
+            s[2] = True
+        if action == self.goal_loc:
+            s[1] = True
         if action in self.must_visit:
-            if action == self.goal_loc:
-                self.initial_state[1] == True
-                return True
-            else:
-                return False
-
-    def action_cost(state1, action, state2):
+            s[self.must_visit.index(action) + 3] = True
+        return tuple(s)
+    def action_cost(self,state1, action, state2):
         try:
-            return action.map_edges[state2, state1]
+            return self.map_edges[state2[0], state1[0]]
         except:
-            return action.map_edges[state1, state2]
-
+            return self.map_edges[state1[0], state2[0]]
     def is_goal(self,state):
-        return 0
+        return state[0] == self.goal_loc and all(state[3:]) and state[1] and not state[2]
     def h(self,node):
-        x = ((self.map_coords[1] - node.state[1])**2 + (self.map_coords[0] - node.state[0])**2)** 0.5
+        if node == self.goal_loc:
+            return 0
+        x = (((self.map_coords[node.state[0]][0]-self.map_coords[self.goal_loc][0])) ** 2 + ((self.map_coords[node.state[0]][1]-self.map_coords[self.goal_loc][1]))**2)**0.5
         return x
 class GridProblemWithMonsters:
     def __init__(self,initial_agent_loc,N,monster_coords,food_coords):
@@ -36,24 +44,66 @@ class GridProblemWithMonsters:
         self.N = N
         self.monster_coords = monster_coords
         self.food_coords = food_coords
-        tmp = [0]+[False for i in food_coords]
-        self.initial_state = initial_agent_loc + tuple(tmp)
+        tmp = [False for i in food_coords]
+        self.initial_state = (initial_agent_loc,0) + tuple(tmp)
     def actions(self,state):
-        l = []
-        if state[2] == 0: #init up
-            if (state[0],state[1]+1) in [(i[0],i[1]) for i in self.monster_coords]:
-                l.append('up')
-        elif state[2] == 1: #left left
-            if (state[0]-1,state[1]) in [(i[0]-1,i[1]) for i in self.monster_coords]:
-                l.append('left')
-        elif state[2] == 2: #init down
-            if (state[0],state[1]-1) in [(i[0],i[1]) for i in self.monster_coords]:
-                l.append('down')
-        elif state[2] == 3: #right
-            if (state[0]+1,state[1]) in [(i[0]+1,i[1]) for i in self.monster_coords]:
-                l.append('right')
+        l = ['left','right','up','down']
+        print(state,1231654165)
+        if state[2] == 0:
+            up = tuple([state[0]+1,state[1]])
+            if up in self.monster_coords or any(up) > self.N:
+                l.remove('up')
+            down = tuple([state[0]-1,state[1]])
+            if down in self.monster_coords or any(down) > self.N:
+                l.remove('down')
+            left = tuple([state[0],state[1]-1])
+            if left in self.monster_coords or any(left) > self.N:
+                l.remove('left')
+            right = tuple([state[0],state[1]+1])
+            if right in self.monster_coords or any(right) > self.N:
+                l.remove('right')
+        elif state[2] == 1:
+            up = tuple([state[0]+1,state[1]])
+            if up in ((i[0],i[1]-1) for i in self.monster_coords) or any(up) > self.N:
+                l.remove('up')
+            down = tuple([state[0]-1,state[1]])
+            if down in ((i[0],i[1]-1) for i in self.monster_coords) or any(down) > self.N:
+                l.remove('down')
+            left = tuple([state[0],state[1]-1])
+            if left in ((i[0],i[1]-1) for i in self.monster_coords) or any(left) > self.N:
+                l.remove('left')
+            right = tuple([state[0],state[1]+1])
+            if right in ((i[0],i[1]-1) for i in self.monster_coords) or any(right) > self.N:
+                l.remove('right')
+        elif state[2] == 2:
+            up = tuple([state[0]+1,state[1]])
+            if up in self.monster_coords or any(up) > self.N:
+                l.remove('up')
+            down = tuple([state[0]-1,state[1]])
+            if down in self.monster_coords or any(down) > self.N:
+                l.remove('down')
+            left = tuple([state[0],state[1]-1])
+            if left in self.monster_coords or any(left) > self.N:
+                l.remove('left')
+            right = tuple([state[0],state[1]+1])
+            if right in self.monster_coords or any(right) > self.N:
+                l.remove('right')
+        elif state[2] == 3:
+            up = tuple([state[0]+1,state[1]])
+            if up in ((i[0],i[1]+1) for i in self.monster_coords) or any(up) > self.N:
+                l.remove('up')
+            down = tuple(state[0][0]-1,state[0][1])
+            if down in ((i[0],i[1]+1) for i in self.monster_coords) or any(down) > self.N:
+                l.remove('down')
+            left = tuple([state[0],state[1]-1])
+            if left in ((i[0],i[1]+1) for i in self.monster_coords) or any(left) > self.N:
+                l.remove('left')
+            right = tuple([state[0],state[1]+1])
+            if right in ((i[0],i[1]+1) for i in self.monster_coords) or any(right) > self.N:
+                l.remove('right')
         return l
     def result(self,state,action):
+        state = list(state)
         match action:
             case 'right':
                 state[0]+=1
@@ -64,11 +114,11 @@ class GridProblemWithMonsters:
             case 'down':
                 state[1]-=1
         state[2] = (1 + state[2]) % 4
-        if tuple(state[0,1]) in self.food_coords:
+        if tuple(state[0:2]) in self.food_coords:
             f = self.food_coords.index(action)
             state[f] = True
         return state
-    def action_cost(state1,action,state2):
+    def action_cost(self,state1,action,state2):
         return 1
     def is_goal(self,state):
         return all(state[3:])

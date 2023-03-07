@@ -2,17 +2,6 @@ from problem import *
 from search_algorithms import *
 from collections import Counter
 
-"""
-    For those who are interested what this class does. Others can safely ignore.
-    
-    We want to implement a wrapper class that will count the 
-    number of times a function is called. Particularly, we want to count the number of times
-    a node is popped from frontier and is generated. 
-    To count the number of times a node is popped, notice that we call p.is_goal right after.
-    So, we just need to count number of times is_goal is called for a Problem object.
-    To count number of times a node is generated, notice that we call p.result.
-    So, we just need to count number of times result is called for a Problem object.
-"""
 class CallCounter:
     def __init__(self, obj):
         self.object = obj # the object being wrapped, for this assignment, it will be a Problem object
@@ -23,9 +12,6 @@ class CallCounter:
         return getattr(self.object, attr) # then call the function 
 
 
-"""
-    Given a list of searchers and problems, prints the statistics report.
-"""
 def print_stat_report(searchers, problems, searcher_names=None):
     for i, searcher in enumerate(searchers):
         sname = searcher.__name__
