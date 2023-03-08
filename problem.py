@@ -44,91 +44,61 @@ class GridProblemWithMonsters:
         self.N = N
         self.monster_coords = monster_coords
         self.food_coords = food_coords
-        tmp = [False for i in food_coords]
-        self.initial_state = (initial_agent_loc,0) + tuple(tmp)
+        tmp = [0]+[False for i in food_coords]
+        self.initial_state = (initial_agent_loc) + tuple(tmp)
     def actions(self,state):
-        l = ['left','right','up','down']
-        print(state,1231654165)
-        if state[2] == 0:
-            up = tuple([state[0]+1,state[1]])
-            if up in self.monster_coords or any(up) > self.N:
-                l.remove('up')
-            down = tuple([state[0]-1,state[1]])
-            if down in self.monster_coords or any(down) > self.N:
-                l.remove('down')
-            left = tuple([state[0],state[1]-1])
-            if left in self.monster_coords or any(left) > self.N:
-                l.remove('left')
-            right = tuple([state[0],state[1]+1])
-            if right in self.monster_coords or any(right) > self.N:
-                l.remove('right')
-        elif state[2] == 1:
-            up = tuple([state[0]+1,state[1]])
-            if up in ((i[0],i[1]-1) for i in self.monster_coords) or any(up) > self.N:
-                l.remove('up')
-            down = tuple([state[0]-1,state[1]])
-            if down in ((i[0],i[1]-1) for i in self.monster_coords) or any(down) > self.N:
-                l.remove('down')
-            left = tuple([state[0],state[1]-1])
-            if left in ((i[0],i[1]-1) for i in self.monster_coords) or any(left) > self.N:
-                l.remove('left')
-            right = tuple([state[0],state[1]+1])
-            if right in ((i[0],i[1]-1) for i in self.monster_coords) or any(right) > self.N:
-                l.remove('right')
-        elif state[2] == 2:
-            up = tuple([state[0]+1,state[1]])
-            if up in self.monster_coords or any(up) > self.N:
-                l.remove('up')
-            down = tuple([state[0]-1,state[1]])
-            if down in self.monster_coords or any(down) > self.N:
-                l.remove('down')
-            left = tuple([state[0],state[1]-1])
-            if left in self.monster_coords or any(left) > self.N:
-                l.remove('left')
-            right = tuple([state[0],state[1]+1])
-            if right in self.monster_coords or any(right) > self.N:
-                l.remove('right')
-        elif state[2] == 3:
-            up = tuple([state[0]+1,state[1]])
-            if up in ((i[0],i[1]+1) for i in self.monster_coords) or any(up) > self.N:
-                l.remove('up')
-            down = tuple(state[0][0]-1,state[0][1])
-            if down in ((i[0],i[1]+1) for i in self.monster_coords) or any(down) > self.N:
-                l.remove('down')
-            left = tuple([state[0],state[1]-1])
-            if left in ((i[0],i[1]+1) for i in self.monster_coords) or any(left) > self.N:
-                l.remove('left')
-            right = tuple([state[0],state[1]+1])
-            if right in ((i[0],i[1]+1) for i in self.monster_coords) or any(right) > self.N:
-                l.remove('right')
-        return l
+        s = list(state)
+        print(s)
+        print(self.monster_coords)
+        actions = []
+        upA = s[0]+1,s[1]
+        downA = s[0]-1,s[1]
+        rightA = s[0],s[1]+1
+        leftA = s[0],s[1]-1
+
+        mosLoc = self.monster_coords
+        mstep = (s[2] + 1 ) % 4
+        match(mstep):
+            case 1:
+                mosLoc = [(i[0],i[1]-1) for i in mosLoc]
+            case 3:
+                mosLoc = [(i[0],i[1]+1) for i in mosLoc]
+        if upA not in mosLoc and all(upA) <= self.N:
+            actions.append('up')
+        if downA not in mosLoc and all(downA) <= self.N:
+            actions.append('down')
+        if rightA not in mosLoc and all(rightA) <= self.N:
+            actions.append('right')
+        if leftA not in mosLoc and all(leftA) <= self.N:
+            actions.append('left')
+        return actions
     def result(self,state,action):
-        state = list(state)
-        match action:
-            case 'right':
-                state[0]+=1
+        s = list(state)
+        s[2] = ((s[2] + 1) % 4)
+        match(action):
             case 'left':
-                state[0]-=1
+                s[1] -=1
+            case 'right':
+                s[1] +=1
             case 'up':
-                state[1]+=1
+                s[0] +=1
             case 'down':
-                state[1]-=1
-        state[2] = (1 + state[2]) % 4
-        if tuple(state[0:2]) in self.food_coords:
-            f = self.food_coords.index(action)
-            state[f] = True
-        return state
+                s[0] -=1
+        x = tuple([s[0],s[1]])
+        if x in self.food_coords:
+            s[self.food_coords.index(x) + 3] = True
+        return tuple(s)
     def action_cost(self,state1,action,state2):
         return 1
     def is_goal(self,state):
         return all(state[3:])
     def h (self,node):
-        if self.is_goal(self.initial_state):
+        loc = tuple(node.state[:2])
+        if self.is_goal(node.state):
             return 0
-        l = []
-        for i in self.food_coords:
-            l.append(abs(node[1]-i[1])+abs(node[0]-i[0]))
-        return min(l)
-
-
-
+        xx = [i for i in self.food_coords if node.state[self.food_coords.index(i) + 3] == False]
+        x = []
+        for i in xx:
+            d = ((i[0]-loc[0])**2 + (i[1]-loc[1])**2)**0.5
+            x.append(d)
+        return min(x)

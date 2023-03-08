@@ -104,9 +104,9 @@ def uniform_cost_search(problem,treelike=False):
         return best_first_search_treelike(problem=problem,f=(lambda x: x.path_cost))
 def greedy_search(problem,h,treelike=False):
     if not treelike:
-        return best_first_search(problem=problem,f=h)
+        return best_first_search(problem=problem,f=(lambda x: h(x)))
     else:
-        return best_first_search_treelike(problem=problem,f=h)
+        return best_first_search_treelike(problem=problem,f=(lambda x: h(x)))
 def astar_search(problem,h,treelike=False):
     if not treelike:
         return best_first_search(problem=problem,f=( lambda n: n.path_cost + h(n) ))
