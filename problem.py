@@ -48,21 +48,22 @@ class GridProblemWithMonsters:
         self.initial_state = (initial_agent_loc) + tuple(tmp)
     def actions(self,state):
         s = list(state)
-        print(s)
-        print(self.monster_coords)
         actions = []
+
+        ori = s[0],s[1]
         upA = s[0]+1,s[1]
         downA = s[0]-1,s[1]
         rightA = s[0],s[1]+1
         leftA = s[0],s[1]-1
 
-        mosLoc = self.monster_coords
         mstep = (s[2] + 1 ) % 4
         match(mstep):
             case 1:
-                mosLoc = [(i[0],i[1]-1) for i in mosLoc]
+                mosLoc = [(i[0],i[1]-1) for i in self.monster_coords]
             case 3:
-                mosLoc = [(i[0],i[1]+1) for i in mosLoc]
+                mosLoc = [(i[0],i[1]+1) for i in self.monster_coords]
+            case _:
+                mosLoc = self.monster_coords
         if upA not in mosLoc and all(upA) <= self.N:
             actions.append('up')
         if downA not in mosLoc and all(downA) <= self.N:
@@ -77,14 +78,18 @@ class GridProblemWithMonsters:
         s[2] = ((s[2] + 1) % 4)
         match(action):
             case 'left':
-                s[1] -=1
+                if 0 <= s[1] - 1 <= self.N:
+                    s[1] -=1
             case 'right':
-                s[1] +=1
+                if 0 <= s[1] + 1 <= self.N:
+                    s[1] +=1
             case 'up':
-                s[0] +=1
+                if 0 <= s[0] + 1 <= self.N:
+                    s[0] +=1
             case 'down':
-                s[0] -=1
-        x = tuple([s[0],s[1]])
+                if 0 <= s[0] - 1 <= self.N:
+                    s[0] -=1
+        x = s[0],s[1]
         if x in self.food_coords:
             s[self.food_coords.index(x) + 3] = True
         return tuple(s)
