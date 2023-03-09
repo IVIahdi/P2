@@ -73,7 +73,7 @@ class GridProblemWithMonsters:
             actions.append('right')
         if leftA not in mosLoc and (1 <= all(leftA) <= self.N):
             actions.append('left')
-        if not now in mosLoc:
+        if now not in mosLoc:
             actions.append('stay')
         return actions
     def result(self,state,action):
@@ -99,9 +99,10 @@ class GridProblemWithMonsters:
     def action_cost(self,state1,action,state2):
         return 1
     def is_goal(self,state):
+        print(state)
         return all(state[3:])
     def h (self,node):
-        loc = tuple(node.state[:2])
+        loc = node.state[0],node.state[1]
         if self.is_goal(node.state):
             return 0
         x = []
