@@ -50,7 +50,7 @@ class GridProblemWithMonsters:
         s = list(state)
         actions = []
 
-        ori = s[0],s[1]
+        now = s[0],s[1]
         upA = s[0]+1,s[1]
         downA = s[0]-1,s[1]
         rightA = s[0],s[1]+1
@@ -64,30 +64,33 @@ class GridProblemWithMonsters:
                 mosLoc = [(i[0],i[1]+1) for i in self.monster_coords]
             case _:
                 mosLoc = self.monster_coords
-        if upA not in mosLoc and all(upA) <= self.N:
+        
+        if upA not in mosLoc and (1 <= all(upA) <= self.N):
             actions.append('up')
-        if downA not in mosLoc and all(downA) <= self.N:
+        if downA not in mosLoc and (1 <= all(downA) <= self.N):
             actions.append('down')
-        if rightA not in mosLoc and all(rightA) <= self.N:
+        if rightA not in mosLoc and (1 <= all(rightA) <= self.N):
             actions.append('right')
-        if leftA not in mosLoc and all(leftA) <= self.N:
+        if leftA not in mosLoc and (1 <= all(leftA) <= self.N):
             actions.append('left')
+        if not now in mosLoc:
+            actions.append('stay')
         return actions
     def result(self,state,action):
         s = list(state)
         s[2] = ((s[2] + 1) % 4)
         match(action):
             case 'left':
-                if 0 <= s[1] - 1 <= self.N:
+                if 1 <= (s[1] - 1) <= self.N:
                     s[1] -=1
             case 'right':
-                if 0 <= s[1] + 1 <= self.N:
+                if 1 <= (s[1] + 1) <= self.N:
                     s[1] +=1
             case 'up':
-                if 0 <= s[0] + 1 <= self.N:
+                if 1 <= (s[0] + 1) <= self.N:
                     s[0] +=1
             case 'down':
-                if 0 <= s[0] - 1 <= self.N:
+                if 1 <= (s[0] - 1) <= self.N:
                     s[0] -=1
         x = s[0],s[1]
         if x in self.food_coords:
@@ -101,9 +104,9 @@ class GridProblemWithMonsters:
         loc = tuple(node.state[:2])
         if self.is_goal(node.state):
             return 0
-        xx = [i for i in self.food_coords if node.state[self.food_coords.index(i) + 3] == False]
         x = []
-        for i in xx:
-            d = ((i[0]-loc[0])**2 + (i[1]-loc[1])**2)**0.5
-            x.append(d)
+        for i,v in enumerate(self.food_coords):
+            if node.state[i+3] == False:
+                j = ((v[0]-loc[0])**2+(v[1]-loc[1])**2)**0.5
+                x.append(j)
         return min(x)
