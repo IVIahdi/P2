@@ -1,5 +1,8 @@
 import heapq
 import problem
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
 
 
 class PriorityQueue:
