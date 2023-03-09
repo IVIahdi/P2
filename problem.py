@@ -1,3 +1,4 @@
+import search_algorithms
 class ConstrainedRouteProblem:
     def __init__(self, initial_agent_loc, goal_loc, map_edges, map_coords, must_visit):
         self.initial_agent_loc = initial_agent_loc
@@ -49,7 +50,6 @@ class GridProblemWithMonsters:
     def actions(self,state):
         s = list(state)
         actions = []
-
         now = s[0],s[1]
         upA = s[0]+1,s[1]
         downA = s[0]-1,s[1]
@@ -99,7 +99,6 @@ class GridProblemWithMonsters:
     def action_cost(self,state1,action,state2):
         return 1
     def is_goal(self,state):
-        print(state)
         return all(state[3:])
     def h (self,node):
         loc = node.state[0],node.state[1]

@@ -1,6 +1,6 @@
 import heapq
 import problem
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 import matplotlib.patches as patches
 
 
@@ -115,4 +115,3 @@ def astar_search(problem,h,treelike=False):
         return best_first_search(problem=problem,f=( lambda n: n.path_cost + h(n) ))
     else:
         return best_first_search_treelike(problem=problem,f=( lambda n: n.path_cost + h(n) ))
-
