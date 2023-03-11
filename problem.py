@@ -1,4 +1,4 @@
-import search_algorithms
+
 class ConstrainedRouteProblem:
     def __init__(self, initial_agent_loc, goal_loc, map_edges, map_coords, must_visit):
         self.initial_agent_loc = initial_agent_loc
@@ -47,34 +47,38 @@ class GridProblemWithMonsters:
         self.food_coords = food_coords
         tmp = [0]+[False for i in food_coords]
         self.initial_state = (initial_agent_loc) + tuple(tmp)
-    def actions(self,state):
-        s = list(state)
-        actions = []
-        now = s[0],s[1]
-        upA = s[0]+1,s[1]
-        downA = s[0]-1,s[1]
-        rightA = s[0],s[1]+1
-        leftA = s[0],s[1]-1
 
-        mstep = (s[2] + 1 ) % 4
+    def actions(self,state):
+        actions = []
+        nowA = state[0],state[1]
+        upA = state[0]+1,state[1]
+        downA = state[0]-1,state[1]
+        rightA = state[0],state[1]+1
+        leftA = state[0],state[1]-1
+
+        mosLoc = self.monster_coords
+        mstep = (state[2] + 1 ) % 4
         match(mstep):
             case 1:
                 mosLoc = [(i[0],i[1]-1) for i in self.monster_coords]
             case 3:
-                mosLoc = [(i[0],i[1]+1) for i in self.monster_coords]
-            case _:
-                mosLoc = self.monster_coords
+                mosLoc = [(i[0],i[1]+1) for i in self.monster_coords] 
         
-        if upA not in mosLoc and (1 <= all(upA) <= self.N):
-            actions.append('up')
-        if downA not in mosLoc and (1 <= all(downA) <= self.N):
-            actions.append('down')
-        if rightA not in mosLoc and (1 <= all(rightA) <= self.N):
-            actions.append('right')
-        if leftA not in mosLoc and (1 <= all(leftA) <= self.N):
-            actions.append('left')
-        if now not in mosLoc:
+        if upA not in mosLoc:
+            if (1<= upA[0] <= self.N) and (1<= upA[1] <= self.N):
+                actions.append('up')
+        if downA not in mosLoc:
+            if (1<= downA[0] <= self.N) and (1<= downA[1] <= self.N):
+                actions.append('down')
+        if rightA not in mosLoc:
+            if (1<= rightA[0] <= self.N) and (1<= rightA[1] <= self.N):
+                actions.append('right')
+        if leftA not in mosLoc:
+            if (1<= leftA[0] <= self.N) and (1<= leftA[1] <= self.N):
+                actions.append('left')
+        if nowA not in self.monster_coords and nowA not in mosLoc:
             actions.append('stay')
+            
         return actions
     def result(self,state,action):
         s = list(state)
@@ -107,6 +111,6 @@ class GridProblemWithMonsters:
         x = []
         for i,v in enumerate(self.food_coords):
             if node.state[i+3] == False:
-                j = ((v[0]-loc[0])**2+(v[1]-loc[1])**2)**0.5
+                j = abs(v[0]-loc[0]) + abs(v[1]-loc[1])
                 x.append(j)
         return min(x)
