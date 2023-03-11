@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 class ConstrainedRouteProblem:
     def __init__(self, initial_agent_loc, goal_loc, map_edges, map_coords, must_visit):
         self.initial_agent_loc = initial_agent_loc
