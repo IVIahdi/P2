@@ -1,4 +1,4 @@
-
+import matplotlib.pyplot as plt
 class ConstrainedRouteProblem:
     def __init__(self, initial_agent_loc, goal_loc, map_edges, map_coords, must_visit):
         self.initial_agent_loc = initial_agent_loc
@@ -47,7 +47,6 @@ class GridProblemWithMonsters:
         self.food_coords = food_coords
         tmp = [0]+[False for i in food_coords]
         self.initial_state = (initial_agent_loc) + tuple(tmp)
-
     def actions(self,state):
         actions = []
         nowA = state[0],state[1]

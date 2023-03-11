@@ -1,8 +1,5 @@
 import heapq
 import problem
-
-
-
 class PriorityQueue:
     def __init__(self, items=(), priority_function=(lambda x: x)):
         self.priority_function = priority_function
